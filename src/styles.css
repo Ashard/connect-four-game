@@ -1,0 +1,6 @@
+.grid-spot {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: red;
+}
