@@ -1,28 +1,30 @@
 import React from "react";
 import GridSpot from "./GridSpot";
+import "../styles.css";
 
 function Grid() {
-    // 6 rows, 7 each
-    var gridSpotRows = [];
-    var gridSpotsColumns = [];
-    for (var i = 1; i < 7; i++) {
-        gridSpotRows.push(i);
-    }
+  // 6 rows, 7 each
+  var gridSpotRows = [];
+  var gridSpotsColumns = [];
 
-    for (var j = 1; i < 8; i++) {
-        gridSpotsColumns.push(j);
-    }    
+  for (var i = 1; i < 7; i++) {
+    gridSpotRows.push(i);
+  }
 
-    return <div>
-        {gridSpotRows.map((row)=> {
-            gridSpotsColumns.map((column)=>{
-                console.log(row, column);
-                // console.log(column)
-                // <GridSpot row={row} column={column}>
-                // </GridSpot>   
-            })
-        })}       
+  for (var j = 1; j < 8; j++) {
+    gridSpotsColumns.push(j);
+  }
+  return (
+    <div className="grid-position">
+      <div className="grid-container">
+        {gridSpotRows.map((rowNumber) => {
+          return gridSpotsColumns.map((columnNumber) => {
+            return <GridSpot row={rowNumber} column={columnNumber}></GridSpot>;
+          });
+        })}
+      </div>
     </div>
+  );
 }
 
 export default Grid;
