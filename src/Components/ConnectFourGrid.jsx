@@ -2,7 +2,7 @@ import React from "react";
 import GridSpot from "./GridSpot";
 import "../styles.css";
 
-function Grid() {
+function ConnectFourGrid() {
   // 6 rows, 7 each
   var gridSpotRows = [];
   var gridSpotsColumns = [];
@@ -27,4 +27,4 @@ function Grid() {
   );
 }
 
-export default Grid;
+export default ConnectFourGrid;

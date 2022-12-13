@@ -1,10 +1,10 @@
-import Grid from "./Components/Grid";
+import ConnectFourGrid from "./Components/ConnectFourGrid";
 import "./styles.css";
 
 function App() {
   return (
     <div className="App">
-      <Grid></Grid>
+      <ConnectFourGrid></ConnectFourGrid>
     </div>
   );
 }
