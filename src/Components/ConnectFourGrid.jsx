@@ -3,23 +3,31 @@ import GridSpot from "./GridSpot";
 import "../styles.css";
 
 function ConnectFourGrid() {
-  // 6 rows, 7 each
-  var gridSpotRows = [];
-  var gridSpotsColumns = [];
-
-  for (var i = 1; i < 7; i++) {
-    gridSpotRows.push(i);
+  var grid_spots = [];
+  for (var i = 0; i < 6; i++) {
+    var row = [];
+    for (var j = 0; j < 7; j++) {
+      row.push(
+        <GridSpot
+          row={i + 1}
+          column={j + 1}
+          onHoverCallback={on_hover_callback}
+        ></GridSpot>
+      );
+    }
+    grid_spots.push(row);
   }
 
-  for (var j = 1; j < 8; j++) {
-    gridSpotsColumns.push(j);
+  function on_hover_callback(grid_spot) {
+    // alert(grid_spot);
   }
+
   return (
     <div className="grid-position">
       <div className="grid-container">
-        {gridSpotRows.map((rowNumber) => {
-          return gridSpotsColumns.map((columnNumber) => {
-            return <GridSpot row={rowNumber} column={columnNumber}></GridSpot>;
+        {grid_spots.map((row) => {
+          return row.map((grid_spot_component) => {
+            return grid_spot_component;
           });
         })}
       </div>

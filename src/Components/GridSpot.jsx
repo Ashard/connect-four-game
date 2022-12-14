@@ -7,7 +7,7 @@ function GridSpot(props) {
   const [taken, setTaken] = useState(false);
 
   return (
-    <div className="grid-spot">
+    <div className="grid-spot" onMouseEnter={props.onHoverCallback(this)}>
       {/* row={row} */}
       {/* column={column} */}
     </div>
