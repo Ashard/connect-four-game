@@ -18,7 +18,20 @@ function ConnectFourGrid() {
     grid_spots.push(row);
   }
 
-  function on_hover_callback(grid_spot) {
+  function on_hover_callback(row_number, column_number) {
+    // highlight the spot where the token can be placed
+    var reversed = grid_spots.reverse();
+    reversed.forEach((row) => {
+      // console.log(row);
+      var grid_spot = row[column_number - 1];
+      console.log(grid_spot);
+      grid_spot.setHighlight(true);
+      return;
+    });
+
+    // console.log("row-->" + row_number);
+    // console.log("column-->" + column_number);
+
     // alert(grid_spot);
   }
 
