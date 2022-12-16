@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import GridSpot from "./GridSpot";
 import "../styles.css";
 
+
+// TODO: we need an array of indices for the spots that are filled
+// if they are filled we set it state here
+// we will also use that to find out the last spot in the column that is not filled
+
 function ConnectFourGrid() {
   const [highlight_index, setHighlightIndex] = useState(null);
   var grid_spots = [];
@@ -36,6 +41,7 @@ function ConnectFourGrid() {
     var reversed = grid_spots.reverse();
     reversed.forEach((row) => {
       var grid_spot = row[column_number - 1];
+
     });
     grid_spots.forEach((spot) => {
       // if (spot.column_number)
