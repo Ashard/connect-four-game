@@ -1,15 +1,14 @@
-import { buildQueries } from "@testing-library/react";
 import React, { useState } from "react";
 import "../styles.css";
 
-function GridSpot(props) {
-  var row = props.row;
-  var column = props.column;
-  const [taken, setTaken] = useState(false);
-  const [highlight, setHighlight] = useState(false);
-
+function GridSpot({row, column, onHoverCallback, state="unfilled"}) {
   function on_hover_callback() {
-    props.onHoverCallback(row, column);
+    onHoverCallback(row, column);
+  }
+
+  var background_color = "blue";
+  if (state === "highlight") {
+    background_color = "red";
   }
 
   // function
@@ -18,11 +17,11 @@ function GridSpot(props) {
       className="grid-spot"
       onMouseEnter={on_hover_callback}
       style={{
-        backgroundColor: highlight ? "blue" : "red",
+        backgroundColor: background_color,
       }}
     >
-      {/* row={row} */}
-      {/* column={column} */}
+      {row}
+      {column}
     </div>
   );
 }
