@@ -2,6 +2,17 @@ import React, { useState } from "react";
 import GridSpot from "./GridSpot";
 import "../styles.css";
 
+
+/**
+ * Todo:
+ * 1) checking for connect four conditions
+ * 2) showing player scores
+ * 3) showing which player is currently playing
+ * 4)  making sure the game is refreshed/updated after the player 
+ * clicks on a spot instead of waiting for the mouse to move again.
+ */
+
+
 function ConnectFourGrid() {
   const [currentPlayer, setCurrentPlayer] = useState("player1");
   const [highlight_index, setHighlightIndex] = useState(null);
