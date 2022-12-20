@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles.css";
 
 function GridSpot({
@@ -13,13 +13,12 @@ function GridSpot({
   }
 
   var background_color = "blue";
-  if (state === "highlight") {
-    background_color = "red";
-  } else if (state === "filled") {
+  if (state === "player1") {
+    background_color = "yellow";
+  } else if (state === "player2"){
     background_color = "green";
   }
-
-  // function
+    
   return (
     <div
       className="grid-spot"

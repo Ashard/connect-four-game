@@ -3,20 +3,21 @@ import GridSpot from "./GridSpot";
 import "../styles.css";
 
 function ConnectFourGrid() {
+  const [currentPlayer, setCurrentPlayer] = useState("player1");
   const [highlight_index, setHighlightIndex] = useState(null);
-  const [filled_grid_spots, setFilledGridSpots] = useState(null);
-
-  if (filled_grid_spots == null) {
+  const [filled_grid_spots, setFilledGridSpots] = useState(() => {
     var init_filled_grid_spots = [];
     for (var i = 0; i < 6; i++) {
       var filled_grid_spots_row = [];
       for (var j = 0; j < 7; j++) {
-        filled_grid_spots_row.push(false);
+        filled_grid_spots_row.push("none");
       }
       init_filled_grid_spots.push(filled_grid_spots_row);
     }
-    setFilledGridSpots(init_filled_grid_spots);
-  }
+
+    return init_filled_grid_spots;
+  });
+    
 
   var grid_spots = [];
 
@@ -27,16 +28,17 @@ function ConnectFourGrid() {
       var state = "unfilled";
       if (highlight_index) {
         if (i === highlight_index[0] && j === highlight_index[1]) {
-          state = "highlight";
+          state = currentPlayer;
         }
       }
 
-      if (filled_grid_spots) {
-        if (filled_grid_spots[i][j] === true) {
-          state = "filled";
-        }
+      if (filled_grid_spots[i][j] !== "none") {
+        var player = filled_grid_spots[i][j];
+        state = player;
       }
 
+      console.log(state);
+    
       var key = (i, j);
       row.push(
         <GridSpot
@@ -59,16 +61,16 @@ function ConnectFourGrid() {
     var highlight_column = column_number;
     if (filled_grid_spots) {
       filled_grid_spots.forEach((row, index) => {
-        var filled = row[column_number];
-        if (filled) {
+        var spot = row[column_number];
+        if (spot !== "none") {
           return; // when the entire column is full
-        } else if (!filled) {
+        } else {
           highlight_row = index;
         }
       });
     }
 
-    if (highlight_row != -1) {
+    if (highlight_row !== -1) {
       setHighlightIndex([highlight_row, highlight_column]);
     }
   }
@@ -77,8 +79,10 @@ function ConnectFourGrid() {
     if (highlight_index != null) {
       var row = highlight_index[0];
       var column = highlight_index[1];
-      filled_grid_spots[row][column] = true;
+      filled_grid_spots[row][column] = currentPlayer;
       setFilledGridSpots(filled_grid_spots);
+      if (currentPlayer === "player1") setCurrentPlayer("player2");
+      if (currentPlayer === "player2") setCurrentPlayer("player1");
     }
   }
 
