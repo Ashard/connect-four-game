@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import GridSpot from "./GridSpot";
 import "../styles.css";
 
-
 /**
  * Todo:
  * 1) checking for connect four conditions
  * 2) showing player scores
  * 3) showing which player is currently playing
- * 4)  making sure the game is refreshed/updated after the player 
+ * 4)  making sure the game is refreshed/updated after the player
  * clicks on a spot instead of waiting for the mouse to move again.
  */
 
+const totalNumOfColumns = 7;
 
 function ConnectFourGrid() {
   const [currentPlayer, setCurrentPlayer] = useState("player1");
@@ -28,7 +28,6 @@ function ConnectFourGrid() {
 
     return init_filled_grid_spots;
   });
-    
 
   var grid_spots = [];
 
@@ -48,8 +47,6 @@ function ConnectFourGrid() {
         state = player;
       }
 
-      console.log(state);
-    
       var key = (i, j);
       row.push(
         <GridSpot
@@ -92,9 +89,56 @@ function ConnectFourGrid() {
       var column = highlight_index[1];
       filled_grid_spots[row][column] = currentPlayer;
       setFilledGridSpots(filled_grid_spots);
+      var win = checkWinCondition(row, column);
+      console.log("win--->" + win);
       if (currentPlayer === "player1") setCurrentPlayer("player2");
       if (currentPlayer === "player2") setCurrentPlayer("player1");
     }
+  }
+
+  function checkWinCondition(rowIndex, columnIndex) {
+    return checkHorizontalWinCondition(rowIndex, columnIndex);
+  }
+
+  function checkHorizontalWinCondition(rowIndex, columnIndex) {
+    var winConditionExists = false;
+
+    // check if we have 3 spots to the right
+    // 7 columns
+    var columnNumber = columnIndex + 1;
+    var numColumnsRight = totalNumOfColumns - columnNumber;
+    // check if we have atleast 3 spots to the right, and then check
+    if (numColumnsRight >= 3) {
+      var winConditionRight = true;
+      var lastIndex = columnIndex + 4;
+      for (var i = columnIndex + 1; i < lastIndex; i++) {
+        if (filled_grid_spots[rowIndex][i] !== currentPlayer) {
+          winConditionRight = false;
+          break;
+        }
+      }
+
+      if (winConditionRight) winConditionExists = true;
+    }
+
+    // check if we have 3 spots to the left
+    if (columnNumber >= 4) {
+      var lastIndex = columnIndex - 4;
+      var winConditionLeft = true;
+      for (var i = columnIndex - 1; i > lastIndex; i--) {
+        console.log("i----->" + i);
+        console.log("row----->" + rowIndex);
+        console.log("filled_grid_spot-->" + filled_grid_spots[rowIndex][i]);
+        if (filled_grid_spots[rowIndex][i] !== currentPlayer) {
+          winConditionLeft = false;
+          break;
+        }
+      }
+
+      if (winConditionLeft) winConditionExists = true;
+    }
+
+    return winConditionExists;
   }
 
   return (
