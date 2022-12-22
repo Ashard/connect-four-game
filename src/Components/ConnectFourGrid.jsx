@@ -5,6 +5,8 @@ import "../styles.css";
 /**
  * Todo:
  * 1) checking for connect four conditions
+ *    a) How to stop counting multiple win conditions.. probably store the wins and see if it has already
+ *       been counted
  * 2) showing player scores
  * 3) showing which player is currently playing
  * 4)  making sure the game is refreshed/updated after the player
@@ -133,6 +135,7 @@ function ConnectFourGrid() {
           winConditionLeft = false;
           break;
         }
+        ç;
       }
 
       if (winConditionLeft) winConditionExists = true;
