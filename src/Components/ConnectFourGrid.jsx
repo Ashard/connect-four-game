@@ -13,6 +13,7 @@ import "../styles.css";
  * clicks on a spot instead of waiting for the mouse to move again.
  */
 
+const horizontalWinRows = [];
 const totalNumOfColumns = 7;
 
 function ConnectFourGrid() {
@@ -103,6 +104,10 @@ function ConnectFourGrid() {
   }
 
   function checkHorizontalWinCondition(rowIndex, columnIndex) {
+    if (horizontalWinRows.includes(rowIndex)) {
+      return false;
+    }
+
     var winConditionExists = false;
 
     // check if we have 3 spots to the right
@@ -121,6 +126,7 @@ function ConnectFourGrid() {
       }
 
       if (winConditionRight) winConditionExists = true;
+      
     }
 
     // check if we have 3 spots to the left
@@ -128,17 +134,17 @@ function ConnectFourGrid() {
       var lastIndex = columnIndex - 4;
       var winConditionLeft = true;
       for (var i = columnIndex - 1; i > lastIndex; i--) {
-        console.log("i----->" + i);
-        console.log("row----->" + rowIndex);
-        console.log("filled_grid_spot-->" + filled_grid_spots[rowIndex][i]);
         if (filled_grid_spots[rowIndex][i] !== currentPlayer) {
           winConditionLeft = false;
           break;
-        }
-        ç;
+        }  
       }
 
       if (winConditionLeft) winConditionExists = true;
+    }
+
+    if (winConditionExists) {
+      horizontalWinRows.push(rowIndex);
     }
 
     return winConditionExists;
