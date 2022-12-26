@@ -14,7 +14,9 @@ import "../styles.css";
  */
 
 const horizontalWinRows = [];
+const verticalWinColumns = [];
 const totalNumOfColumns = 7;
+const totalNumOfRows = 6;
 
 function ConnectFourGrid() {
   const [currentPlayer, setCurrentPlayer] = useState("player1");
@@ -100,7 +102,9 @@ function ConnectFourGrid() {
   }
 
   function checkWinCondition(rowIndex, columnIndex) {
-    return checkHorizontalWinCondition(rowIndex, columnIndex);
+    // checkHorizontalWinCondition(rowIndex, columnIndex);
+    return checkVerticalWinCondition(rowIndex, columnIndex);
+    // return checkHorizontalWinCondition(rowIndex, columnIndex);
   }
 
   function checkHorizontalWinCondition(rowIndex, columnIndex) {
@@ -126,7 +130,6 @@ function ConnectFourGrid() {
       }
 
       if (winConditionRight) winConditionExists = true;
-      
     }
 
     // check if we have 3 spots to the left
@@ -137,7 +140,7 @@ function ConnectFourGrid() {
         if (filled_grid_spots[rowIndex][i] !== currentPlayer) {
           winConditionLeft = false;
           break;
-        }  
+        }
       }
 
       if (winConditionLeft) winConditionExists = true;
@@ -148,6 +151,44 @@ function ConnectFourGrid() {
     }
 
     return winConditionExists;
+  }
+
+  function checkVerticalWinCondition(rowIndex, columnIndex) {
+    if (verticalWinColumns.includes(columnIndex)) return false;
+    // check if there are 3 more spots downwards from current highlighted index
+    var verticalWinExists = false;
+    var rowsRemainingDownwards = totalNumOfRows - (rowIndex + 1);
+    if (rowsRemainingDownwards >= 3) {
+      var downwardWinExists = true;
+      var lastIndex = rowIndex + 4;
+      for (var i = rowIndex; i < lastIndex; i++) {
+        if (filled_grid_spots[i][columnIndex] !== currentPlayer) {
+          downwardWinExists = false;
+          break;
+        }
+      }
+
+      if (downwardWinExists) verticalWinExists = true;
+    }
+
+    // check if there are 3 or more spots upwards frm current highlighted index
+    if (rowIndex >= 3) {
+      var lastIndex = rowIndex - 4;
+      var upwardWinConditionExists = true;
+      for (var i = rowIndex; i > lastIndex; i--) {
+        if (filled_grid_spots[i][columnIndex] !== currentPlayer) {
+          upwardWinConditionExists = false;
+          break;
+        }
+      }
+      if (upwardWinConditionExists) verticalWinExists = true;
+    }
+
+    if (verticalWinExists) {
+      verticalWinColumns.push(columnIndex);
+    }
+
+    return verticalWinExists;
   }
 
   return (
