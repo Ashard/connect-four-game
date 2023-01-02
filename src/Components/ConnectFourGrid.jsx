@@ -4,6 +4,7 @@ import "../styles.css";
 
 /**
  * Todo:
+ * 1) Can simply horizontal and vertical win conditions by just checking if the row/column has four in a row for the current player... EZ
  * 1) checking for connect four conditions
  *    a) How to stop counting multiple win conditions.. probably store the wins and see if it has already
  *       been counted
@@ -15,6 +16,7 @@ import "../styles.css";
 
 const horizontalWinRows = [];
 const verticalWinColumns = [];
+const northWestToSouthEastWins = [];
 const totalNumOfColumns = 7;
 const totalNumOfRows = 6;
 
@@ -103,7 +105,8 @@ function ConnectFourGrid() {
 
   function checkWinCondition(rowIndex, columnIndex) {
     // checkHorizontalWinCondition(rowIndex, columnIndex);
-    return checkVerticalWinCondition(rowIndex, columnIndex);
+    // return checkVerticalWinCondition(rowIndex, columnIndex);
+    return checkDiagonalWins(rowIndex, columnIndex);
     // return checkHorizontalWinCondition(rowIndex, columnIndex);
   }
 
@@ -189,6 +192,40 @@ function ConnectFourGrid() {
     }
 
     return verticalWinExists;
+  }
+
+  function checkDiagonalWins(rowIndex, columnIndex) {
+    return checkNorthWestToSouthWestDiagonalWins(rowIndex, columnIndex);
+  }
+
+  function checkNorthWestToSouthWestDiagonalWins(rowIndex, columnIndex) {
+    //check upwards (only if its on the 3rd column or further, should we need to check upwards diagonally)
+
+      // while (rowIndex)
+    
+    var currentRowIndex = rowIndex;
+    var currentColumnIndex = columnIndex;
+    while (currentRowIndex > 0 && currentColumnIndex > 0) {
+      currentRowIndex -= 1;
+      currentColumnIndex -= 1;
+    }
+
+    var winExists = true;
+    while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
+      console.log();
+      console.log("current row index -->" + currentRowIndex);
+      console.log("current column index -->" + currentColumnIndex);
+      console.log("current item->" + filled_grid_spots[currentRowIndex][currentColumnIndex]);
+      if (filled_grid_spots[currentRowIndex][currentColumnIndex] !== currentPlayer) {
+        winExists = false;
+        break;
+      } else {
+        currentRowIndex += 1;
+        currentColumnIndex += 1;
+      }
+    }
+
+    return winExists;
   }
 
   return (
