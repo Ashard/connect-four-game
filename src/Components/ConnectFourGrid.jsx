@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import GridSpot from "./GridSpot";
 import "../styles.css";
+import { type } from "@testing-library/user-event/dist/type";
 
 /**
  * Todo:
@@ -199,10 +200,6 @@ function ConnectFourGrid() {
   }
 
   function checkNorthWestToSouthWestDiagonalWins(rowIndex, columnIndex) {
-    //check upwards (only if its on the 3rd column or further, should we need to check upwards diagonally)
-
-      // while (rowIndex)
-    
     var currentRowIndex = rowIndex;
     var currentColumnIndex = columnIndex;
     while (currentRowIndex > 0 && currentColumnIndex > 0) {
@@ -210,22 +207,62 @@ function ConnectFourGrid() {
       currentColumnIndex -= 1;
     }
 
-    var winExists = true;
-    while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
-      console.log();
-      console.log("current row index -->" + currentRowIndex);
-      console.log("current column index -->" + currentColumnIndex);
-      console.log("current item->" + filled_grid_spots[currentRowIndex][currentColumnIndex]);
-      if (filled_grid_spots[currentRowIndex][currentColumnIndex] !== currentPlayer) {
-        winExists = false;
-        break;
-      } else {
+    var startRowIndex = currentRowIndex;
+    var startColumnIndex = currentColumnIndex;
+    var winExists = false;
+
+    var winAlreadyExists = hasNorthWestToSouthEastWin(northWestToSouthEastWins, startRowIndex, startColumnIndex); 
+
+    console.log("win already exists??-->" + winAlreadyExists);
+    if (!hasNorthWestToSouthEastWin(northWestToSouthEastWins, startRowIndex, startColumnIndex)) {
+      var indicesWithCurrentPlayer = [];
+      while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
+        if (filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer) {
+          indicesWithCurrentPlayer.push(currentRowIndex);
+        }
         currentRowIndex += 1;
-        currentColumnIndex += 1;
+        currentColumnIndex += 1;        
+      }
+
+      // console.log
+      if (indicesWithCurrentPlayer.length < 4) return false;
+
+      var i = 0;
+      while (i < indicesWithCurrentPlayer.length - 1) {
+        var diff = Math.abs(indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]);
+
+        if (diff > 1) {
+          return false;
+        }
+
+        i++;
+      }
+
+      winExists = true;
+    } 
+    
+    if (winExists) {
+      northWestToSouthEastWins.push([startRowIndex, startColumnIndex]);
+    }
+
+    return winExists;   
+  }
+
+
+  /*
+  * Helper function to check if there is an existing with in diagonal direction
+  */
+  function hasNorthWestToSouthEastWin(savedWins, rowIndex, columnIndex) {
+    console.log();
+    console.log("hasNorthWestToSouthEastWin");
+
+    for (var i = 0; i < savedWins.length; i++) {
+      if (rowIndex == savedWins[i][0] && columnIndex == savedWins[i][1]) {
+        return true;
       }
     }
 
-    return winExists;
+    return false;
   }
 
   return (
