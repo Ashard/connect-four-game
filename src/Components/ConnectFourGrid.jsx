@@ -5,23 +5,23 @@ import { type } from "@testing-library/user-event/dist/type";
 
 /**
  * Todo:
- * 1) Can simply horizontal and vertical win conditions by just checking if the row/column has four in a row for the current player... EZ
- * 1) checking for connect four conditions
- *    a) How to stop counting multiple win conditions.. probably store the wins and see if it has already
- *       been counted
- * 2) showing player scores
- * 3) showing which player is currently playing
- * 4)  making sure the game is refreshed/updated after the player
- * clicks on a spot instead of waiting for the mouse to move again.
+ * 1) doing research on debug tools
+ * 2) showing which player is currently playing by showing the player
+ * color before the player score
+ * 
  */
 
 const horizontalWinRows = [];
 const verticalWinColumns = [];
 const northWestToSouthEastWins = [];
+const northEastToSouthWestWins = [];
 const totalNumOfColumns = 7;
 const totalNumOfRows = 6;
 
+
 function ConnectFourGrid() {
+  const [playerOneScore, setPlayerOneScore] = useState(0);
+  const [playerTwoScore, setPlayerTwoScore] = useState(0);
   const [currentPlayer, setCurrentPlayer] = useState("player1");
   const [highlight_index, setHighlightIndex] = useState(null);
   const [filled_grid_spots, setFilledGridSpots] = useState(() => {
@@ -97,20 +97,41 @@ function ConnectFourGrid() {
       var column = highlight_index[1];
       filled_grid_spots[row][column] = currentPlayer;
       setFilledGridSpots(filled_grid_spots);
-      var win = checkWinCondition(row, column);
-      console.log("win--->" + win);
-      if (currentPlayer === "player1") setCurrentPlayer("player2");
-      if (currentPlayer === "player2") setCurrentPlayer("player1");
+      var points = checkWinCondition(row, column);
+      console.log("points-->" + points);
+      if (currentPlayer === "player1") {
+        if (points > 0) setPlayerOneScore(playerOneScore + points);
+        setCurrentPlayer("player2");
+      }
+      if (currentPlayer === "player2") {
+        if (points > 0) setPlayerTwoScore(playerTwoScore + points);
+        setCurrentPlayer("player1");
+      }
     }
   }
 
+
+  /**
+   * 
+   * @param {the row index the user clicked on} rowIndex 
+   * @param {the column index the user clicked on} columnIndex 
+   * @returns the number of points the current player gets
+   */
   function checkWinCondition(rowIndex, columnIndex) {
-    // checkHorizontalWinCondition(rowIndex, columnIndex);
-    // return checkVerticalWinCondition(rowIndex, columnIndex);
-    return checkDiagonalWins(rowIndex, columnIndex);
-    // return checkHorizontalWinCondition(rowIndex, columnIndex);
+    var points = 0;
+    if (checkHorizontalWinCondition(rowIndex, columnIndex)) { points += 1 };
+    if (checkVerticalWinCondition(rowIndex, columnIndex)) { points += 1 };
+    if (checkNorthWestToSouthEastDiagonalWins(rowIndex, columnIndex)) { points += 1 };
+    if (checkNorthEastToSouthWestDiagonalWins(rowIndex, columnIndex)) { points += 1 };
+    return points;
   }
 
+  /**
+   * 
+   * @param {the row index the user clicked on} rowIndex 
+   * @param {the column index the user clicked on} columnIndex 
+   * @returns true if there is a win condition in the horizontal direction
+   */
   function checkHorizontalWinCondition(rowIndex, columnIndex) {
     if (horizontalWinRows.includes(rowIndex)) {
       return false;
@@ -157,6 +178,13 @@ function ConnectFourGrid() {
     return winConditionExists;
   }
 
+
+  /**
+   * 
+   * @param {the row index the user clicked on} rowIndex 
+   * @param {the column index the user clicked on} columnIndex 
+   * @returns true if there is a win condtion in the vertical direction
+   */
   function checkVerticalWinCondition(rowIndex, columnIndex) {
     if (verticalWinColumns.includes(columnIndex)) return false;
     // check if there are 3 more spots downwards from current highlighted index
@@ -195,11 +223,14 @@ function ConnectFourGrid() {
     return verticalWinExists;
   }
 
-  function checkDiagonalWins(rowIndex, columnIndex) {
-    return checkNorthWestToSouthWestDiagonalWins(rowIndex, columnIndex);
-  }
 
-  function checkNorthWestToSouthWestDiagonalWins(rowIndex, columnIndex) {
+  /**
+   * 
+   * @param {the row index the user clicked on} rowIndex 
+   * @param {the column index the user clicked on} columnIndex 
+   * @returns true if there is a win condition from North West to South East direction
+   */
+  function checkNorthWestToSouthEastDiagonalWins(rowIndex, columnIndex) {
     var currentRowIndex = rowIndex;
     var currentColumnIndex = columnIndex;
     while (currentRowIndex > 0 && currentColumnIndex > 0) {
@@ -211,10 +242,7 @@ function ConnectFourGrid() {
     var startColumnIndex = currentColumnIndex;
     var winExists = false;
 
-    var winAlreadyExists = hasNorthWestToSouthEastWin(northWestToSouthEastWins, startRowIndex, startColumnIndex); 
-
-    console.log("win already exists??-->" + winAlreadyExists);
-    if (!hasNorthWestToSouthEastWin(northWestToSouthEastWins, startRowIndex, startColumnIndex)) {
+    if (!hasDiagonalWin(northWestToSouthEastWins, startRowIndex, startColumnIndex)) {
       var indicesWithCurrentPlayer = [];
       while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
         if (filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer) {
@@ -224,7 +252,6 @@ function ConnectFourGrid() {
         currentColumnIndex += 1;        
       }
 
-      // console.log
       if (indicesWithCurrentPlayer.length < 4) return false;
 
       var i = 0;
@@ -246,18 +273,61 @@ function ConnectFourGrid() {
     }
 
     return winExists;   
+    
   }
 
+
+  function checkNorthEastToSouthWestDiagonalWins(rowIndex, columnIndex) {
+    var currentRowIndex = rowIndex;
+    var currentColumnIndex = columnIndex;
+    while (currentRowIndex > 0 && currentColumnIndex < 7) {
+      currentRowIndex -= 1;
+      currentColumnIndex += 1;
+    }
+
+    var startRowIndex = currentRowIndex;
+    var startColumnIndex = currentColumnIndex;
+    var winExists = false;
+
+    if (!hasDiagonalWin(northEastToSouthWestWins, startRowIndex, startColumnIndex)) {
+      var indicesWithCurrentPlayer = [];
+      while (currentRowIndex <= 5 && currentColumnIndex >= 0) {
+        if (filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer) {
+          indicesWithCurrentPlayer.push(currentRowIndex);
+        }
+        currentRowIndex += 1;
+        currentColumnIndex -= 1;        
+      }
+
+      if (indicesWithCurrentPlayer.length < 4) return false;
+
+      var i = 0;
+      while (i < indicesWithCurrentPlayer.length - 1) {
+        var diff = Math.abs(indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]);
+
+        if (diff > 1) {
+          return false;
+        }
+
+        i++;
+      }
+
+      winExists = true;
+    }
+
+    if (winExists) {
+      northEastToSouthWestWins.push([startRowIndex, startColumnIndex]);
+    }
+
+    return winExists;
+  }
 
   /*
   * Helper function to check if there is an existing with in diagonal direction
   */
-  function hasNorthWestToSouthEastWin(savedWins, rowIndex, columnIndex) {
-    console.log();
-    console.log("hasNorthWestToSouthEastWin");
-
+  function hasDiagonalWin(savedWins, rowIndex, columnIndex) {
     for (var i = 0; i < savedWins.length; i++) {
-      if (rowIndex == savedWins[i][0] && columnIndex == savedWins[i][1]) {
+      if (rowIndex === savedWins[i][0] && columnIndex === savedWins[i][1]) {
         return true;
       }
     }
@@ -266,13 +336,20 @@ function ConnectFourGrid() {
   }
 
   return (
-    <div className="grid-position">
-      <div className="grid-container">
-        {grid_spots.map((row) => {
-          return row.map((spot) => {
-            return spot;
-          });
-        })}
+    <div>
+      <div className="scoreboard">
+        <div className="">player 1: {playerOneScore}</div>
+        <div className="">player 2: {playerTwoScore}</div>      
+        </div>        
+        
+      <div className="grid-position">
+        <div className="grid-container">
+          {grid_spots.map((row) => {
+            return row.map((spot) => {
+              return spot;
+            });
+          })}
+        </div>
       </div>
     </div>
   );

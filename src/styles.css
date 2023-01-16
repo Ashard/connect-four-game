@@ -1,6 +1,5 @@
 .grid-position {
     display: flex;
-    /* margin: auto; */
     justify-content: center;
     margin: auto;
 }
@@ -20,4 +19,11 @@
 
 .grid-spot:hover {
     background-color: yellow;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+    margin: 10px 0px;
 }
