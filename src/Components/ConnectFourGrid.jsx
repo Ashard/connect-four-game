@@ -5,7 +5,7 @@ import { type } from "@testing-library/user-event/dist/type";
 
 /**
  * Todo:
- * 1) doing research on debug tools
+ * 1) add the consecutiveCount variable to the other diagonal function as well 
  * 2) showing which player is currently playing by showing the player
  * color before the player score
  * 
@@ -302,17 +302,22 @@ function ConnectFourGrid() {
       if (indicesWithCurrentPlayer.length < 4) return false;
 
       var i = 0;
-      while (i < indicesWithCurrentPlayer.length - 1) {
+      var consecutiveCount = 0;
+      while (i < indicesWithCurrentPlayer.length - 1 && consecutiveCount < 3) {
         var diff = Math.abs(indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]);
-
-        if (diff > 1) {
-          return false;
+        
+        if (diff === 1) {
+          consecutiveCount += 1;
+        } else {
+          consecutiveCount = 0;
         }
 
         i++;
       }
 
-      winExists = true;
+      if (consecutiveCount >= 3) {
+        winExists = true;
+      }
     }
 
     if (winExists) {
