@@ -12,13 +12,13 @@ function GridSpot({
     onHoverCallback(row, column);
   }
 
-  var background_color = "blue";
+  var background_color = "#353ffc";
   if (state === "player1") {
-    background_color = "yellow";
-  } else if (state === "player2"){
-    background_color = "green";
+    background_color = "#f5bc42";
+  } else if (state === "player2") {
+    background_color = "#f54542";
   }
-    
+
   return (
     <div
       className="grid-spot"
@@ -27,10 +27,7 @@ function GridSpot({
       style={{
         backgroundColor: background_color,
       }}
-    >
-      {row}
-      {column}
-    </div>
+    ></div>
   );
 }
 

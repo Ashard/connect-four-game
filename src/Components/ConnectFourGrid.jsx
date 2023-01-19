@@ -1,27 +1,21 @@
 import React, { useState } from "react";
 import GridSpot from "./GridSpot";
 import "../styles.css";
-import { type } from "@testing-library/user-event/dist/type";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 /**
  * Todo:
- * 1) add the consecutiveCount variable to the other diagonal function as well 
+ * 1) add the consecutiveCount variable to the other diagonal function as well
  * 2) showing which player is currently playing by showing the player
  * color before the player score
- * 
+ *
  */
-
-const horizontalWinRows = [];
-const verticalWinColumns = [];
-const northWestToSouthEastWins = [];
-const northEastToSouthWestWins = [];
 const totalNumOfColumns = 7;
 const totalNumOfRows = 6;
 
-
 function ConnectFourGrid() {
-  const [playerOneScore, setPlayerOneScore] = useState(0);
-  const [playerTwoScore, setPlayerTwoScore] = useState(0);
+  const [showWinDialog, setShowWinDialog] = useState(true);
   const [currentPlayer, setCurrentPlayer] = useState("player1");
   const [highlight_index, setHighlightIndex] = useState(null);
   const [filled_grid_spots, setFilledGridSpots] = useState(() => {
@@ -71,6 +65,11 @@ function ConnectFourGrid() {
     grid_spots.push(row);
   }
 
+  /**
+   *
+   * @param {row index user is currently hovering} row_number
+   * @param {column index user is currently hovering} column_number
+   */
   function on_hover_callback(row_number, column_number) {
     // find the last spot in the column to highlight
     var highlight_row = -1;
@@ -91,52 +90,59 @@ function ConnectFourGrid() {
     }
   }
 
+  /**
+   * OnClick callback when user clicks on an available slot
+   */
   function on_click_callback() {
     if (highlight_index != null) {
       var row = highlight_index[0];
       var column = highlight_index[1];
       filled_grid_spots[row][column] = currentPlayer;
       setFilledGridSpots(filled_grid_spots);
-      var points = checkWinCondition(row, column);
-      console.log("points-->" + points);
+      if (checkWinCondition(row, column)) {
+        // show who won and bring up the dialog to play again
+        console.log(currentPlayer + "WON");
+      } else {
+        console.log("win condition not met for " + currentPlayer);
+      }
       if (currentPlayer === "player1") {
-        if (points > 0) setPlayerOneScore(playerOneScore + points);
         setCurrentPlayer("player2");
       }
       if (currentPlayer === "player2") {
-        if (points > 0) setPlayerTwoScore(playerTwoScore + points);
         setCurrentPlayer("player1");
       }
     }
   }
 
-
   /**
-   * 
-   * @param {the row index the user clicked on} rowIndex 
-   * @param {the column index the user clicked on} columnIndex 
+   *
+   * @param {the row index the user clicked on} rowIndex
+   * @param {the column index the user clicked on} columnIndex
    * @returns the number of points the current player gets
    */
   function checkWinCondition(rowIndex, columnIndex) {
-    var points = 0;
-    if (checkHorizontalWinCondition(rowIndex, columnIndex)) { points += 1 };
-    if (checkVerticalWinCondition(rowIndex, columnIndex)) { points += 1 };
-    if (checkNorthWestToSouthEastDiagonalWins(rowIndex, columnIndex)) { points += 1 };
-    if (checkNorthEastToSouthWestDiagonalWins(rowIndex, columnIndex)) { points += 1 };
-    return points;
+    if (checkHorizontalWinCondition(rowIndex, columnIndex)) {
+      return true;
+    }
+    if (checkVerticalWinCondition(rowIndex, columnIndex)) {
+      return true;
+    }
+    if (checkNorthWestToSouthEastDiagonalWins(rowIndex, columnIndex)) {
+      return true;
+    }
+    if (checkNorthEastToSouthWestDiagonalWins(rowIndex, columnIndex)) {
+      return true;
+    }
+    return false;
   }
 
   /**
-   * 
-   * @param {the row index the user clicked on} rowIndex 
-   * @param {the column index the user clicked on} columnIndex 
+   *
+   * @param {the row index the user clicked on} rowIndex
+   * @param {the column index the user clicked on} columnIndex
    * @returns true if there is a win condition in the horizontal direction
    */
   function checkHorizontalWinCondition(rowIndex, columnIndex) {
-    if (horizontalWinRows.includes(rowIndex)) {
-      return false;
-    }
-
     var winConditionExists = false;
 
     // check if we have 3 spots to the right
@@ -171,22 +177,16 @@ function ConnectFourGrid() {
       if (winConditionLeft) winConditionExists = true;
     }
 
-    if (winConditionExists) {
-      horizontalWinRows.push(rowIndex);
-    }
-
     return winConditionExists;
   }
 
-
   /**
-   * 
-   * @param {the row index the user clicked on} rowIndex 
-   * @param {the column index the user clicked on} columnIndex 
+   *
+   * @param {the row index the user clicked on} rowIndex
+   * @param {the column index the user clicked on} columnIndex
    * @returns true if there is a win condtion in the vertical direction
    */
   function checkVerticalWinCondition(rowIndex, columnIndex) {
-    if (verticalWinColumns.includes(columnIndex)) return false;
     // check if there are 3 more spots downwards from current highlighted index
     var verticalWinExists = false;
     var rowsRemainingDownwards = totalNumOfRows - (rowIndex + 1);
@@ -203,7 +203,7 @@ function ConnectFourGrid() {
       if (downwardWinExists) verticalWinExists = true;
     }
 
-    // check if there are 3 or more spots upwards frm current highlighted index
+    // check if there are 3 or more spots upwards from current highlighted index
     if (rowIndex >= 3) {
       var lastIndex = rowIndex - 4;
       var upwardWinConditionExists = true;
@@ -216,18 +216,13 @@ function ConnectFourGrid() {
       if (upwardWinConditionExists) verticalWinExists = true;
     }
 
-    if (verticalWinExists) {
-      verticalWinColumns.push(columnIndex);
-    }
-
     return verticalWinExists;
   }
 
-
   /**
-   * 
-   * @param {the row index the user clicked on} rowIndex 
-   * @param {the column index the user clicked on} columnIndex 
+   *
+   * @param {the row index the user clicked on} rowIndex
+   * @param {the column index the user clicked on} columnIndex
    * @returns true if there is a win condition from North West to South East direction
    */
   function checkNorthWestToSouthEastDiagonalWins(rowIndex, columnIndex) {
@@ -238,45 +233,51 @@ function ConnectFourGrid() {
       currentColumnIndex -= 1;
     }
 
-    var startRowIndex = currentRowIndex;
-    var startColumnIndex = currentColumnIndex;
     var winExists = false;
 
-    if (!hasDiagonalWin(northWestToSouthEastWins, startRowIndex, startColumnIndex)) {
-      var indicesWithCurrentPlayer = [];
-      while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
-        if (filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer) {
-          indicesWithCurrentPlayer.push(currentRowIndex);
-        }
-        currentRowIndex += 1;
-        currentColumnIndex += 1;        
+    var indicesWithCurrentPlayer = [];
+    while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
+      if (
+        filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer
+      ) {
+        indicesWithCurrentPlayer.push(currentRowIndex);
       }
-
-      if (indicesWithCurrentPlayer.length < 4) return false;
-
-      var i = 0;
-      while (i < indicesWithCurrentPlayer.length - 1) {
-        var diff = Math.abs(indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]);
-
-        if (diff > 1) {
-          return false;
-        }
-
-        i++;
-      }
-
-      winExists = true;
-    } 
-    
-    if (winExists) {
-      northWestToSouthEastWins.push([startRowIndex, startColumnIndex]);
+      currentRowIndex += 1;
+      currentColumnIndex += 1;
     }
 
-    return winExists;   
-    
+    if (indicesWithCurrentPlayer.length < 4) return false;
+
+    var i = 0;
+    var consecutiveCount = 0;
+
+    while (i < indicesWithCurrentPlayer.length - 1 && consecutiveCount < 3) {
+      var diff = Math.abs(
+        indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]
+      );
+
+      if (diff === 1) {
+        consecutiveCount += 1;
+      } else {
+        consecutiveCount = 0;
+      }
+
+      i++;
+    }
+
+    if (consecutiveCount >= 3) {
+      winExists = true;
+    }
+
+    return winExists;
   }
 
-
+  /**
+   *
+   * @param {the row index the user clicked on} rowIndex
+   * @param {the column index the user clicked on} columnIndex
+   * @returns true if there is a win condition in the North East To South West diagonal
+   */
   function checkNorthEastToSouthWestDiagonalWins(rowIndex, columnIndex) {
     var currentRowIndex = rowIndex;
     var currentColumnIndex = columnIndex;
@@ -285,68 +286,74 @@ function ConnectFourGrid() {
       currentColumnIndex += 1;
     }
 
-    var startRowIndex = currentRowIndex;
-    var startColumnIndex = currentColumnIndex;
     var winExists = false;
 
-    if (!hasDiagonalWin(northEastToSouthWestWins, startRowIndex, startColumnIndex)) {
-      var indicesWithCurrentPlayer = [];
-      while (currentRowIndex <= 5 && currentColumnIndex >= 0) {
-        if (filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer) {
-          indicesWithCurrentPlayer.push(currentRowIndex);
-        }
-        currentRowIndex += 1;
-        currentColumnIndex -= 1;        
+    var indicesWithCurrentPlayer = [];
+    while (currentRowIndex <= 5 && currentColumnIndex >= 0) {
+      if (
+        filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer
+      ) {
+        indicesWithCurrentPlayer.push(currentRowIndex);
       }
-
-      if (indicesWithCurrentPlayer.length < 4) return false;
-
-      var i = 0;
-      var consecutiveCount = 0;
-      while (i < indicesWithCurrentPlayer.length - 1 && consecutiveCount < 3) {
-        var diff = Math.abs(indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]);
-        
-        if (diff === 1) {
-          consecutiveCount += 1;
-        } else {
-          consecutiveCount = 0;
-        }
-
-        i++;
-      }
-
-      if (consecutiveCount >= 3) {
-        winExists = true;
-      }
+      currentRowIndex += 1;
+      currentColumnIndex -= 1;
     }
 
-    if (winExists) {
-      northEastToSouthWestWins.push([startRowIndex, startColumnIndex]);
+    if (indicesWithCurrentPlayer.length < 4) return false;
+
+    var i = 0;
+    var consecutiveCount = 0;
+    while (i < indicesWithCurrentPlayer.length - 1 && consecutiveCount < 3) {
+      var diff = Math.abs(
+        indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]
+      );
+
+      if (diff === 1) {
+        consecutiveCount += 1;
+      } else {
+        consecutiveCount = 0;
+      }
+
+      i++;
+    }
+
+    if (consecutiveCount >= 3) {
+      winExists = true;
     }
 
     return winExists;
   }
 
-  /*
-  * Helper function to check if there is an existing with in diagonal direction
-  */
-  function hasDiagonalWin(savedWins, rowIndex, columnIndex) {
-    for (var i = 0; i < savedWins.length; i++) {
-      if (rowIndex === savedWins[i][0] && columnIndex === savedWins[i][1]) {
-        return true;
-      }
-    }
-
-    return false;
+  /**
+   * Handle close of the win dialog
+   */
+  function handleClose() {
+    setShowWinDialog(false);
   }
 
   return (
     <div>
+      <Modal show={showWinDialog} onHide={handleClose}>
+        <div className="winDialogHeadingText">{currentPlayer} wins!</div>
+        <Modal.Body>
+          <div className="playAgainBtnFlexBox">
+            <Button className="playAgainBtn">Play again</Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+
       <div className="scoreboard">
-        <div className="">player 1: {playerOneScore}</div>
-        <div className="">player 2: {playerTwoScore}</div>      
-        </div>        
-        
+        <div className="playerColorFlex">
+          player 1:
+          <div className="playerOneColor"></div>
+        </div>
+
+        <div className="playerColorFlex">
+          player 2:
+          <div className="playerTwoColor"></div>
+        </div>
+      </div>
+
       <div className="grid-position">
         <div className="grid-container">
           {grid_spots.map((row) => {

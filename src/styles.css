@@ -27,3 +27,30 @@
     gap: 100px;
     margin: 10px 0px;
 }
+
+.playerOneColor, .playerTwoColor {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #f5bc42;
+}
+
+.playerTwoColor {
+    background-color: #f54542;
+}
+
+.playerColorFlex {
+    display: flex;
+    align-items: center;
+}
+
+.winDialogHeadingText {
+    margin: auto;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.playAgainBtnFlexBox {
+    display: flex;
+    justify-content: center;
+}
