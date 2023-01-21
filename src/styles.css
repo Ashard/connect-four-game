@@ -8,17 +8,19 @@
     display: grid;
     grid-template-columns: 3rem 3rem 3rem 3rem 3rem 3rem 3rem;
     gap: 16px;
+    background: #353ffc;
+    border-radius: 8px;
+    padding: 8px;
 }
 
 .grid-spot {
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-    background-color: red;
-}
-
-.grid-spot:hover {
-    background-color: yellow;
+    border-style: inset;
+    border-color: black;
+    /* border-color: black; */
+    /* border-width: ; */
 }
 
 .scoreboard {
@@ -50,7 +52,14 @@
     font-weight: 800;
 }
 
-.playAgainBtnFlexBox {
+.winDialogBtnsFlexBox {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.restartBtn {
+    margin-top: 32px;
     display: flex;
     justify-content: center;
 }

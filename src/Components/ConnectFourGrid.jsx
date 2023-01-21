@@ -6,19 +6,21 @@ import Button from "react-bootstrap/Button";
 
 /**
  * Todo:
- * 1) add the consecutiveCount variable to the other diagonal function as well
- * 2) showing which player is currently playing by showing the player
- * color before the player score
+ * 1) add win state and use that to allow user interaction with the connectfour grid
  *
  */
 const totalNumOfColumns = 7;
 const totalNumOfRows = 6;
 
 function ConnectFourGrid() {
-  const [showWinDialog, setShowWinDialog] = useState(true);
+  const [showWinDialog, setShowWinDialog] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState("player1");
   const [highlight_index, setHighlightIndex] = useState(null);
   const [filled_grid_spots, setFilledGridSpots] = useState(() => {
+    return initFilledGridSpots();
+  });
+
+  function initFilledGridSpots() {
     var init_filled_grid_spots = [];
     for (var i = 0; i < 6; i++) {
       var filled_grid_spots_row = [];
@@ -29,7 +31,7 @@ function ConnectFourGrid() {
     }
 
     return init_filled_grid_spots;
-  });
+  }
 
   var grid_spots = [];
 
@@ -100,16 +102,14 @@ function ConnectFourGrid() {
       filled_grid_spots[row][column] = currentPlayer;
       setFilledGridSpots(filled_grid_spots);
       if (checkWinCondition(row, column)) {
-        // show who won and bring up the dialog to play again
-        console.log(currentPlayer + "WON");
+        setShowWinDialog(true);
       } else {
-        console.log("win condition not met for " + currentPlayer);
-      }
-      if (currentPlayer === "player1") {
-        setCurrentPlayer("player2");
-      }
-      if (currentPlayer === "player2") {
-        setCurrentPlayer("player1");
+        if (currentPlayer === "player1") {
+          setCurrentPlayer("player2");
+        }
+        if (currentPlayer === "player2") {
+          setCurrentPlayer("player1");
+        }
       }
     }
   }
@@ -331,13 +331,25 @@ function ConnectFourGrid() {
     setShowWinDialog(false);
   }
 
+  /**
+   * Restart game callback
+   */
+  function restartGame() {
+    setShowWinDialog(false);
+    setFilledGridSpots(initFilledGridSpots());
+    setHighlightIndex(null);
+    setCurrentPlayer("player1");
+  }
+
   return (
     <div>
       <Modal show={showWinDialog} onHide={handleClose}>
-        <div className="winDialogHeadingText">{currentPlayer} wins!</div>
+        <div className="winDialogHeadingText">
+          {currentPlayer === "player1" ? "Player 1" : "Player 2"} wins!
+        </div>
         <Modal.Body>
-          <div className="playAgainBtnFlexBox">
-            <Button className="playAgainBtn">Play again</Button>
+          <div className="winDialogBtnsFlexBox">
+            <Button onClick={restartGame}>Play again</Button>
           </div>
         </Modal.Body>
       </Modal>
@@ -362,6 +374,11 @@ function ConnectFourGrid() {
             });
           })}
         </div>
+      </div>
+      <div className="restartBtn">
+        <Button variant="dark" onClick={restartGame}>
+          Restart
+        </Button>
       </div>
     </div>
   );

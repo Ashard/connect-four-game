@@ -12,7 +12,7 @@ function GridSpot({
     onHoverCallback(row, column);
   }
 
-  var background_color = "#353ffc";
+  var background_color = "white";
   if (state === "player1") {
     background_color = "#f5bc42";
   } else if (state === "player2") {
