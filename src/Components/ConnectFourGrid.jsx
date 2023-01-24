@@ -15,39 +15,39 @@ const totalNumOfRows = 6;
 function ConnectFourGrid() {
   const [showWinDialog, setShowWinDialog] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState("player1");
-  const [highlight_index, setHighlightIndex] = useState(null);
-  const [filled_grid_spots, setFilledGridSpots] = useState(() => {
+  const [highlightIndex, setHighlightIndex] = useState(null);
+  const [filledGridSpots, setFilledGridSpots] = useState(() => {
     return initFilledGridSpots();
   });
 
   function initFilledGridSpots() {
-    var init_filled_grid_spots = [];
+    var initFilledGridSpots = [];
     for (var i = 0; i < 6; i++) {
       var filled_grid_spots_row = [];
       for (var j = 0; j < 7; j++) {
         filled_grid_spots_row.push("none");
       }
-      init_filled_grid_spots.push(filled_grid_spots_row);
+      initFilledGridSpots.push(filled_grid_spots_row);
     }
 
-    return init_filled_grid_spots;
+    return initFilledGridSpots;
   }
 
-  var grid_spots = [];
+  var gridSpots = [];
 
   for (var i = 0; i < 6; i++) {
     var row = [];
 
     for (var j = 0; j < 7; j++) {
       var state = "unfilled";
-      if (highlight_index) {
-        if (i === highlight_index[0] && j === highlight_index[1]) {
+      if (highlightIndex) {
+        if (i === highlightIndex[0] && j === highlightIndex[1]) {
           state = currentPlayer;
         }
       }
 
-      if (filled_grid_spots[i][j] !== "none") {
-        var player = filled_grid_spots[i][j];
+      if (filledGridSpots[i][j] !== "none") {
+        var player = filledGridSpots[i][j];
         state = player;
       }
 
@@ -57,14 +57,14 @@ function ConnectFourGrid() {
           key={key}
           row={i}
           column={j}
-          onHoverCallback={on_hover_callback}
-          onClickCallback={on_click_callback}
+          onHoverCallback={onHoverCallback}
+          onClickCallback={onClickCallback}
           state={state}
         ></GridSpot>
       );
     }
 
-    grid_spots.push(row);
+    gridSpots.push(row);
   }
 
   /**
@@ -72,35 +72,35 @@ function ConnectFourGrid() {
    * @param {row index user is currently hovering} row_number
    * @param {column index user is currently hovering} column_number
    */
-  function on_hover_callback(row_number, column_number) {
+  function onHoverCallback(rowNum, colNum) {
     // find the last spot in the column to highlight
-    var highlight_row = -1;
-    var highlight_column = column_number;
-    if (filled_grid_spots) {
-      filled_grid_spots.forEach((row, index) => {
-        var spot = row[column_number];
+    var highlightRow = -1;
+    var highlightColumn = colNum;
+    if (filledGridSpots) {
+      filledGridSpots.forEach((row, index) => {
+        var spot = row[colNum];
         if (spot !== "none") {
           return; // when the entire column is full
         } else {
-          highlight_row = index;
+          highlightRow = index;
         }
       });
     }
 
-    if (highlight_row !== -1) {
-      setHighlightIndex([highlight_row, highlight_column]);
+    if (highlightRow !== -1) {
+      setHighlightIndex([highlightRow, highlightColumn]);
     }
   }
 
   /**
    * OnClick callback when user clicks on an available slot
    */
-  function on_click_callback() {
-    if (highlight_index != null) {
-      var row = highlight_index[0];
-      var column = highlight_index[1];
-      filled_grid_spots[row][column] = currentPlayer;
-      setFilledGridSpots(filled_grid_spots);
+  function onClickCallback() {
+    if (highlightIndex != null) {
+      var row = highlightIndex[0];
+      var column = highlightIndex[1];
+      filledGridSpots[row][column] = currentPlayer;
+      setFilledGridSpots(filledGridSpots);
       if (checkWinCondition(row, column)) {
         setShowWinDialog(true);
       } else {
@@ -154,7 +154,7 @@ function ConnectFourGrid() {
       var winConditionRight = true;
       var lastIndex = columnIndex + 4;
       for (var i = columnIndex + 1; i < lastIndex; i++) {
-        if (filled_grid_spots[rowIndex][i] !== currentPlayer) {
+        if (filledGridSpots[rowIndex][i] !== currentPlayer) {
           winConditionRight = false;
           break;
         }
@@ -168,7 +168,7 @@ function ConnectFourGrid() {
       var lastIndex = columnIndex - 4;
       var winConditionLeft = true;
       for (var i = columnIndex - 1; i > lastIndex; i--) {
-        if (filled_grid_spots[rowIndex][i] !== currentPlayer) {
+        if (filledGridSpots[rowIndex][i] !== currentPlayer) {
           winConditionLeft = false;
           break;
         }
@@ -194,7 +194,7 @@ function ConnectFourGrid() {
       var downwardWinExists = true;
       var lastIndex = rowIndex + 4;
       for (var i = rowIndex; i < lastIndex; i++) {
-        if (filled_grid_spots[i][columnIndex] !== currentPlayer) {
+        if (filledGridSpots[i][columnIndex] !== currentPlayer) {
           downwardWinExists = false;
           break;
         }
@@ -208,7 +208,7 @@ function ConnectFourGrid() {
       var lastIndex = rowIndex - 4;
       var upwardWinConditionExists = true;
       for (var i = rowIndex; i > lastIndex; i--) {
-        if (filled_grid_spots[i][columnIndex] !== currentPlayer) {
+        if (filledGridSpots[i][columnIndex] !== currentPlayer) {
           upwardWinConditionExists = false;
           break;
         }
@@ -238,7 +238,7 @@ function ConnectFourGrid() {
     var indicesWithCurrentPlayer = [];
     while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
       if (
-        filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer
+        filledGridSpots[currentRowIndex][currentColumnIndex] === currentPlayer
       ) {
         indicesWithCurrentPlayer.push(currentRowIndex);
       }
@@ -291,7 +291,7 @@ function ConnectFourGrid() {
     var indicesWithCurrentPlayer = [];
     while (currentRowIndex <= 5 && currentColumnIndex >= 0) {
       if (
-        filled_grid_spots[currentRowIndex][currentColumnIndex] === currentPlayer
+        filledGridSpots[currentRowIndex][currentColumnIndex] === currentPlayer
       ) {
         indicesWithCurrentPlayer.push(currentRowIndex);
       }
@@ -343,7 +343,12 @@ function ConnectFourGrid() {
 
   return (
     <div>
-      <Modal show={showWinDialog} onHide={handleClose}>
+      <Modal
+        show={showWinDialog}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+      >
         <div className="winDialogHeadingText">
           {currentPlayer === "player1" ? "Player 1" : "Player 2"} wins!
         </div>
@@ -368,7 +373,7 @@ function ConnectFourGrid() {
 
       <div className="grid-position">
         <div className="grid-container">
-          {grid_spots.map((row) => {
+          {gridSpots.map((row) => {
             return row.map((spot) => {
               return spot;
             });
