@@ -33,40 +33,6 @@ function ConnectFourGrid() {
     return initFilledGridSpots;
   }
 
-  var gridSpots = [];
-
-  for (var i = 0; i < 6; i++) {
-    var row = [];
-
-    for (var j = 0; j < 7; j++) {
-      var state = "unfilled";
-      if (highlightIndex) {
-        if (i === highlightIndex[0] && j === highlightIndex[1]) {
-          state = currentPlayer;
-        }
-      }
-
-      if (filledGridSpots[i][j] !== "none") {
-        var player = filledGridSpots[i][j];
-        state = player;
-      }
-
-      var key = (i, j);
-      row.push(
-        <GridSpot
-          key={key}
-          row={i}
-          column={j}
-          onHoverCallback={onHoverCallback}
-          onClickCallback={onClickCallback}
-          state={state}
-        ></GridSpot>
-      );
-    }
-
-    gridSpots.push(row);
-  }
-
   /**
    *
    * @param {row index user is currently hovering} row_number
@@ -339,6 +305,39 @@ function ConnectFourGrid() {
     setFilledGridSpots(initFilledGridSpots());
     setHighlightIndex(null);
     setCurrentPlayer("player1");
+  }
+
+  var gridSpots = [];
+  for (var i = 0; i < 6; i++) {
+    var row = [];
+
+    for (var j = 0; j < 7; j++) {
+      var state = "unfilled";
+      if (highlightIndex) {
+        if (i === highlightIndex[0] && j === highlightIndex[1]) {
+          state = currentPlayer;
+        }
+      }
+
+      if (filledGridSpots[i][j] !== "none") {
+        var player = filledGridSpots[i][j];
+        state = player;
+      }
+
+      var key = (i, j);
+      row.push(
+        <GridSpot
+          key={key}
+          row={i}
+          column={j}
+          onHoverCallback={onHoverCallback}
+          onClickCallback={onClickCallback}
+          state={state}
+        ></GridSpot>
+      );
+    }
+
+    gridSpots.push(row);
   }
 
   return (
