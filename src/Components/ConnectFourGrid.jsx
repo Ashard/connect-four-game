@@ -6,7 +6,10 @@ import Button from "react-bootstrap/Button";
 
 /**
  * Todo:
- * 1) add win state and use that to allow user interaction with the connectfour grid
+ * 1) Add a 30s timer for each players turn
+ * 2) Show the points for each player on either side
+ * 3) Show the current player at the bottom
+ * 4) Move the restart button to the top
  *
  */
 const totalNumOfColumns = 7;
@@ -341,7 +344,7 @@ function ConnectFourGrid() {
   }
 
   return (
-    <div>
+    <div className="page-column">
       <Modal
         show={showWinDialog}
         onHide={handleClose}
@@ -358,19 +361,13 @@ function ConnectFourGrid() {
         </Modal.Body>
       </Modal>
 
-      <div className="scoreboard">
-        <div className="playerColorFlex">
-          player 1:
-          <div className="playerOneColor"></div>
-        </div>
-
-        <div className="playerColorFlex">
-          player 2:
-          <div className="playerTwoColor"></div>
-        </div>
-      </div>
-
       <div className="grid-position">
+        <div className="restartBtn">
+          <Button variant="dark" onClick={restartGame}>
+            Restart
+          </Button>
+        </div>
+
         <div className="grid-container">
           {gridSpots.map((row) => {
             return row.map((spot) => {
@@ -378,11 +375,6 @@ function ConnectFourGrid() {
             });
           })}
         </div>
-      </div>
-      <div className="restartBtn">
-        <Button variant="dark" onClick={restartGame}>
-          Restart
-        </Button>
       </div>
     </div>
   );

@@ -1,7 +1,16 @@
+.page-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
 .grid-position {
     display: flex;
+    flex-direction: column;
+    width: fit-content;
     justify-content: center;
-    margin: auto;
 }
 
 .grid-container {
@@ -21,6 +30,10 @@
     border-color: black;
     /* border-color: black; */
     /* border-width: ; */
+}
+
+.restartBtn {
+    align-self: flex-end;
 }
 
 .scoreboard {
@@ -56,10 +69,4 @@
     display: flex;
     justify-content: center;
     gap: 8px;
-}
-
-.restartBtn {
-    margin-top: 32px;
-    display: flex;
-    justify-content: center;
 }
