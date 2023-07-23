@@ -1,3 +1,13 @@
+* {
+    font-family: 'Amatic SC', cursive;
+    letter-spacing: 2px;
+    /* font-family: 'Lato', sans-serif; */
+}
+
+.App {
+    background-color: #6735fc;
+}
+
 .page-column {
     display: flex;
     flex-direction: column;
@@ -7,19 +17,23 @@
 }
 
 .grid-position {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    justify-content: center;
+    width: 450px;
+ 
 }
 
 .grid-container {
     display: grid;
+    grid-auto-columns: min-content;
     grid-template-columns: 3rem 3rem 3rem 3rem 3rem 3rem 3rem;
+    justify-content: center;
     gap: 16px;
-    background: #353ffc;
-    border-radius: 8px;
+    background: #ffffff;
+    border-radius: 16px;
     padding: 8px;
+    border-style: inset;
+    border-color: black;
+    border-width: 2px;
+    box-shadow: 0px 6px 0px 0px;
 }
 
 .grid-spot {
@@ -28,45 +42,37 @@
     border-radius: 50%;
     border-style: inset;
     border-color: black;
-    /* border-color: black; */
-    /* border-width: ; */
+    box-shadow: inset 0px 6px 0px 0px rgba(0,0,0);
 }
 
-.restartBtn {
-    align-self: flex-end;
+.primary-btn {
+    background-color: #4f21d8 !important;
+    border-color: transparent !important;
+    border-radius: 16px !important;
+    font-size: 16px !important;
 }
 
-.scoreboard {
-    display: flex;
-    justify-content: center;
-    gap: 100px;
-    margin: 10px 0px;
-}
-
-.playerOneColor, .playerTwoColor {
-    width: 24px;
-    height: 24px;
+.player-color-indicator {
+    width: 3rem;
+    height: 3rem;
     border-radius: 50%;
-    background-color: #f5bc42;
+    border: 2px solid black;
 }
 
-.playerTwoColor {
-    background-color: #f54542;
+.player-name-input {
+    background-color: #4f21d8 !important;
+    border-radius: 16px !important;
+    text-align: center;
+    color: whitesmoke;
+    width: 100%;
+    font-size: 16px;
 }
 
-.playerColorFlex {
-    display: flex;
-    align-items: center;
+.player-name-input:focus-visible {
+    outline-color: #4f21d8;
 }
 
-.winDialogHeadingText {
-    margin: auto;
-    font-size: 2rem;
-    font-weight: 800;
-}
-
-.winDialogBtnsFlexBox {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
+.scoreboard-text {
+    color: whitesmoke;
+    font-weight: bold;
 }

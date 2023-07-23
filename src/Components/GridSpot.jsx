@@ -6,29 +6,22 @@ function GridSpot({
   column,
   onHoverCallback,
   onClickCallback,
-  state = "unfilled",
+  backgroundColor,
 }) {
-  function on_hover_callback() {
+  function handleOnHoverCB() {
     onHoverCallback(row, column);
-  }
-
-  var background_color = "white";
-  if (state === "player1") {
-    background_color = "#f5bc42";
-  } else if (state === "player2") {
-    background_color = "#f54542";
   }
 
   return (
     <div
       className="grid-spot"
-      onMouseEnter={on_hover_callback}
+      onMouseEnter={() => handleOnHoverCB()}
       onClick={onClickCallback}
       style={{
-        backgroundColor: background_color,
+        backgroundColor: backgroundColor,
       }}
     ></div>
   );
 }
 
-export default GridSpot; // default export
+export default GridSpot;

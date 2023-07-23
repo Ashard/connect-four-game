@@ -1,39 +1,41 @@
 import React, { useState } from "react";
 import GridSpot from "./GridSpot";
+import ControlPanel from "./ControlPanel";
+import Scoreboard from "./Scoreboard";
 import "../styles.css";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-/**
- * Todo:
- * 1) Add a 30s timer for each players turn
- * 2) Show the points for each player on either side
- * 3) Show the current player at the bottom
- * 4) Move the restart button to the top
- *
- */
 const totalNumOfColumns = 7;
 const totalNumOfRows = 6;
 
 function ConnectFourGrid() {
-  const [showWinDialog, setShowWinDialog] = useState(false);
+  const playerOneColor = "#f5bc42";
+  const playerTwoColor = "#CB4C4E";
+
+  const [playerOneName, setPlayerOneName] = useState("Player1");
+  const [playerTwoName, setPlayerTwoName] = useState("Player2");
   const [currentPlayer, setCurrentPlayer] = useState("player1");
+  const [winner, setWinner] = useState(null);
   const [highlightIndex, setHighlightIndex] = useState(null);
-  const [filledGridSpots, setFilledGridSpots] = useState(() => {
+  const [gridSpotStates, setGridSpotStates] = useState(() => {
     return initFilledGridSpots();
   });
 
+  function handlePlayerOneNameChange(e) {
+    setPlayerOneName(e.target.value);
+  }
+
+  function handlePlayerTwoNameChange(e) {
+    setPlayerTwoName(e.target.value);
+  }
+
   function initFilledGridSpots() {
-    var initFilledGridSpots = [];
-    for (var i = 0; i < 6; i++) {
-      var filled_grid_spots_row = [];
-      for (var j = 0; j < 7; j++) {
-        filled_grid_spots_row.push("none");
-      }
-      initFilledGridSpots.push(filled_grid_spots_row);
+    const grid = [];
+    for (let i = 0; i < 6; i++) {
+      grid.push(Array(7).fill("none"));
     }
 
-    return initFilledGridSpots;
+    return grid;
   }
 
   /**
@@ -43,21 +45,23 @@ function ConnectFourGrid() {
    */
   function onHoverCallback(rowNum, colNum) {
     // find the last spot in the column to highlight
-    var highlightRow = -1;
-    var highlightColumn = colNum;
-    if (filledGridSpots) {
-      filledGridSpots.forEach((row, index) => {
-        var spot = row[colNum];
-        if (spot !== "none") {
-          return; // when the entire column is full
-        } else {
-          highlightRow = index;
-        }
-      });
-    }
+    if (winner === null) {
+      let highlightRow = -1;
+      let highlightColumn = colNum;
 
-    if (highlightRow !== -1) {
-      setHighlightIndex([highlightRow, highlightColumn]);
+      if (gridSpotStates) {
+        gridSpotStates.forEach((row, index) => {
+          let spot = row[colNum];
+          if (spot !== "none") {
+            return; // when the entire column is full
+          } else {
+            highlightRow = index;
+          }
+        });
+      }
+      if (highlightRow !== -1) {
+        setHighlightIndex([highlightRow, highlightColumn]);
+      }
     }
   }
 
@@ -66,18 +70,28 @@ function ConnectFourGrid() {
    */
   function onClickCallback() {
     if (highlightIndex != null) {
-      var row = highlightIndex[0];
-      var column = highlightIndex[1];
-      filledGridSpots[row][column] = currentPlayer;
-      setFilledGridSpots(filledGridSpots);
-      if (checkWinCondition(row, column)) {
-        setShowWinDialog(true);
+      if (playerOneName === "" || playerTwoName === "") {
+        alert("Please ensure player names are not empty");
       } else {
-        if (currentPlayer === "player1") {
-          setCurrentPlayer("player2");
-        }
-        if (currentPlayer === "player2") {
-          setCurrentPlayer("player1");
+        var row = highlightIndex[0];
+        var column = highlightIndex[1];
+        if (gridSpotStates[row][column] === "none") {
+          gridSpotStates[row][column] =
+            currentPlayer === "player1" ? "player1" : "player2";
+          setGridSpotStates(gridSpotStates);
+          setHighlightIndex(null);
+          if (checkWinCondition(row, column)) {
+            setWinner(
+              currentPlayer === "player1" ? playerOneName : playerTwoName
+            );
+          } else {
+            if (currentPlayer === "player2") {
+              setCurrentPlayer("player1");
+            }
+            if (currentPlayer === "player1") {
+              setCurrentPlayer("player2");
+            }
+          }
         }
       }
     }
@@ -112,18 +126,18 @@ function ConnectFourGrid() {
    * @returns true if there is a win condition in the horizontal direction
    */
   function checkHorizontalWinCondition(rowIndex, columnIndex) {
-    var winConditionExists = false;
+    let winConditionExists = false;
 
     // check if we have 3 spots to the right
     // 7 columns
-    var columnNumber = columnIndex + 1;
-    var numColumnsRight = totalNumOfColumns - columnNumber;
+    let columnNumber = columnIndex + 1;
+    let numColumnsRight = totalNumOfColumns - columnNumber;
     // check if we have atleast 3 spots to the right, and then check
     if (numColumnsRight >= 3) {
-      var winConditionRight = true;
-      var lastIndex = columnIndex + 4;
-      for (var i = columnIndex + 1; i < lastIndex; i++) {
-        if (filledGridSpots[rowIndex][i] !== currentPlayer) {
+      let winConditionRight = true;
+      let lastIndex = columnIndex + 4;
+      for (let i = columnIndex + 1; i < lastIndex; i++) {
+        if (gridSpotStates[rowIndex][i] !== currentPlayer) {
           winConditionRight = false;
           break;
         }
@@ -134,10 +148,10 @@ function ConnectFourGrid() {
 
     // check if we have 3 spots to the left
     if (columnNumber >= 4) {
-      var lastIndex = columnIndex - 4;
-      var winConditionLeft = true;
-      for (var i = columnIndex - 1; i > lastIndex; i--) {
-        if (filledGridSpots[rowIndex][i] !== currentPlayer) {
+      let lastIndex = columnIndex - 4;
+      let winConditionLeft = true;
+      for (let i = columnIndex - 1; i > lastIndex; i--) {
+        if (gridSpotStates[rowIndex][i] !== currentPlayer) {
           winConditionLeft = false;
           break;
         }
@@ -157,13 +171,13 @@ function ConnectFourGrid() {
    */
   function checkVerticalWinCondition(rowIndex, columnIndex) {
     // check if there are 3 more spots downwards from current highlighted index
-    var verticalWinExists = false;
-    var rowsRemainingDownwards = totalNumOfRows - (rowIndex + 1);
+    let verticalWinExists = false;
+    let rowsRemainingDownwards = totalNumOfRows - (rowIndex + 1);
     if (rowsRemainingDownwards >= 3) {
-      var downwardWinExists = true;
-      var lastIndex = rowIndex + 4;
-      for (var i = rowIndex; i < lastIndex; i++) {
-        if (filledGridSpots[i][columnIndex] !== currentPlayer) {
+      let downwardWinExists = true;
+      let lastIndex = rowIndex + 4;
+      for (let i = rowIndex; i < lastIndex; i++) {
+        if (gridSpotStates[i][columnIndex] !== currentPlayer) {
           downwardWinExists = false;
           break;
         }
@@ -174,10 +188,10 @@ function ConnectFourGrid() {
 
     // check if there are 3 or more spots upwards from current highlighted index
     if (rowIndex >= 3) {
-      var lastIndex = rowIndex - 4;
-      var upwardWinConditionExists = true;
-      for (var i = rowIndex; i > lastIndex; i--) {
-        if (filledGridSpots[i][columnIndex] !== currentPlayer) {
+      let lastIndex = rowIndex - 4;
+      let upwardWinConditionExists = true;
+      for (let i = rowIndex; i > lastIndex; i--) {
+        if (gridSpotStates[i][columnIndex] !== currentPlayer) {
           upwardWinConditionExists = false;
           break;
         }
@@ -195,19 +209,19 @@ function ConnectFourGrid() {
    * @returns true if there is a win condition from North West to South East direction
    */
   function checkNorthWestToSouthEastDiagonalWins(rowIndex, columnIndex) {
-    var currentRowIndex = rowIndex;
-    var currentColumnIndex = columnIndex;
+    let currentRowIndex = rowIndex;
+    let currentColumnIndex = columnIndex;
     while (currentRowIndex > 0 && currentColumnIndex > 0) {
       currentRowIndex -= 1;
       currentColumnIndex -= 1;
     }
 
-    var winExists = false;
+    let winExists = false;
 
-    var indicesWithCurrentPlayer = [];
+    let indicesWithCurrentPlayer = [];
     while (currentRowIndex <= 5 && currentColumnIndex <= 6) {
       if (
-        filledGridSpots[currentRowIndex][currentColumnIndex] === currentPlayer
+        gridSpotStates[currentRowIndex][currentColumnIndex] === currentPlayer
       ) {
         indicesWithCurrentPlayer.push(currentRowIndex);
       }
@@ -217,11 +231,11 @@ function ConnectFourGrid() {
 
     if (indicesWithCurrentPlayer.length < 4) return false;
 
-    var i = 0;
-    var consecutiveCount = 0;
+    let i = 0;
+    let consecutiveCount = 0;
 
     while (i < indicesWithCurrentPlayer.length - 1 && consecutiveCount < 3) {
-      var diff = Math.abs(
+      let diff = Math.abs(
         indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]
       );
 
@@ -248,19 +262,19 @@ function ConnectFourGrid() {
    * @returns true if there is a win condition in the North East To South West diagonal
    */
   function checkNorthEastToSouthWestDiagonalWins(rowIndex, columnIndex) {
-    var currentRowIndex = rowIndex;
-    var currentColumnIndex = columnIndex;
+    let currentRowIndex = rowIndex;
+    let currentColumnIndex = columnIndex;
     while (currentRowIndex > 0 && currentColumnIndex < 7) {
       currentRowIndex -= 1;
       currentColumnIndex += 1;
     }
 
-    var winExists = false;
+    let winExists = false;
 
-    var indicesWithCurrentPlayer = [];
+    let indicesWithCurrentPlayer = [];
     while (currentRowIndex <= 5 && currentColumnIndex >= 0) {
       if (
-        filledGridSpots[currentRowIndex][currentColumnIndex] === currentPlayer
+        gridSpotStates[currentRowIndex][currentColumnIndex] === currentPlayer
       ) {
         indicesWithCurrentPlayer.push(currentRowIndex);
       }
@@ -270,10 +284,10 @@ function ConnectFourGrid() {
 
     if (indicesWithCurrentPlayer.length < 4) return false;
 
-    var i = 0;
-    var consecutiveCount = 0;
+    let i = 0;
+    let consecutiveCount = 0;
     while (i < indicesWithCurrentPlayer.length - 1 && consecutiveCount < 3) {
-      var diff = Math.abs(
+      let diff = Math.abs(
         indicesWithCurrentPlayer[i] - indicesWithCurrentPlayer[i + 1]
       );
 
@@ -294,40 +308,40 @@ function ConnectFourGrid() {
   }
 
   /**
-   * Handle close of the win dialog
-   */
-  function handleClose() {
-    setShowWinDialog(false);
-  }
-
-  /**
    * Restart game callback
    */
   function restartGame() {
-    setShowWinDialog(false);
-    setFilledGridSpots(initFilledGridSpots());
+    setWinner(null);
+    setGridSpotStates(initFilledGridSpots());
     setHighlightIndex(null);
     setCurrentPlayer("player1");
   }
 
-  var gridSpots = [];
-  for (var i = 0; i < 6; i++) {
-    var row = [];
+  // creating GridSpot components with their states
+  let gridSpots = [];
+  for (let i = 0; i < 6; i++) {
+    let row = [];
 
-    for (var j = 0; j < 7; j++) {
-      var state = "unfilled";
-      if (highlightIndex) {
-        if (i === highlightIndex[0] && j === highlightIndex[1]) {
-          state = currentPlayer;
+    for (let j = 0; j < 7; j++) {
+      let key = i.toString() + j.toString();
+      let gridSpotBgColor = "#6735fc";
+
+      if (
+        highlightIndex &&
+        highlightIndex[0] === i &&
+        highlightIndex[1] === j
+      ) {
+        gridSpotBgColor =
+          currentPlayer === "player1" ? playerOneColor : playerTwoColor;
+      } else {
+        let currentGridSpotState = gridSpotStates[i][j];
+        if (currentGridSpotState === "player1") {
+          gridSpotBgColor = playerOneColor;
+        } else if (currentGridSpotState === "player2") {
+          gridSpotBgColor = playerTwoColor;
         }
       }
 
-      if (filledGridSpots[i][j] !== "none") {
-        var player = filledGridSpots[i][j];
-        state = player;
-      }
-
-      var key = (i, j);
       row.push(
         <GridSpot
           key={key}
@@ -335,7 +349,7 @@ function ConnectFourGrid() {
           column={j}
           onHoverCallback={onHoverCallback}
           onClickCallback={onClickCallback}
-          state={state}
+          backgroundColor={gridSpotBgColor}
         ></GridSpot>
       );
     }
@@ -345,29 +359,13 @@ function ConnectFourGrid() {
 
   return (
     <div className="page-column">
-      <Modal
-        show={showWinDialog}
-        onHide={handleClose}
-        backdrop="static"
-        keyboard={false}
-      >
-        <div className="winDialogHeadingText">
-          {currentPlayer === "player1" ? "Player 1" : "Player 2"} wins!
-        </div>
-        <Modal.Body>
-          <div className="winDialogBtnsFlexBox">
-            <Button onClick={restartGame}>Play again</Button>
-          </div>
-        </Modal.Body>
-      </Modal>
-
+      <Scoreboard
+        currentPlayer={
+          currentPlayer === "player1" ? playerOneName : playerTwoName
+        }
+        winner={winner ? winner : null}
+      ></Scoreboard>
       <div className="grid-position">
-        <div className="restartBtn">
-          <Button variant="dark" onClick={restartGame}>
-            Restart
-          </Button>
-        </div>
-
         <div className="grid-container">
           {gridSpots.map((row) => {
             return row.map((spot) => {
@@ -375,6 +373,17 @@ function ConnectFourGrid() {
             });
           })}
         </div>
+      </div>
+      <div className="mt-3">
+        <ControlPanel
+          playerOneName={playerOneName}
+          playerOneColor={playerOneColor}
+          playerTwoName={playerTwoName}
+          playerTwoColor={playerTwoColor}
+          handleRestartGame={restartGame}
+          handlePlayerOneNameChange={handlePlayerOneNameChange}
+          handlePlayerTwoNameChange={handlePlayerTwoNameChange}
+        ></ControlPanel>
       </div>
     </div>
   );
