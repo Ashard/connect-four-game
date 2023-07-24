@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import GridSpot from "./GridSpot";
-import ControlPanel from "./ControlPanel";
+import Controls from "./Controls";
 import Scoreboard from "./Scoreboard";
 import "../styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-const totalNumOfColumns = 7;
-const totalNumOfRows = 6;
 
 function ConnectFourGrid() {
   const playerOneColor = "#f5bc42";
@@ -18,7 +15,7 @@ function ConnectFourGrid() {
   const [winner, setWinner] = useState(null);
   const [highlightIndex, setHighlightIndex] = useState(null);
   const [gridSpotStates, setGridSpotStates] = useState(() => {
-    return initFilledGridSpots();
+    return initGridSpotStates();
   });
 
   function handlePlayerOneNameChange(e) {
@@ -29,7 +26,7 @@ function ConnectFourGrid() {
     setPlayerTwoName(e.target.value);
   }
 
-  function initFilledGridSpots() {
+  function initGridSpotStates() {
     const grid = [];
     for (let i = 0; i < 6; i++) {
       grid.push(Array(7).fill("none"));
@@ -43,7 +40,7 @@ function ConnectFourGrid() {
    * @param {row index user is currently hovering} row_number
    * @param {column index user is currently hovering} column_number
    */
-  function onHoverCallback(rowNum, colNum) {
+  function handleGridSpotHover(rowNum, colNum) {
     // find the last spot in the column to highlight
     if (winner === null) {
       let highlightRow = -1;
@@ -68,7 +65,7 @@ function ConnectFourGrid() {
   /**
    * OnClick callback when user clicks on an available slot
    */
-  function onClickCallback() {
+  function handleGridSpotClick() {
     if (highlightIndex != null) {
       if (playerOneName === "" || playerTwoName === "") {
         alert("Please ensure player names are not empty");
@@ -131,7 +128,7 @@ function ConnectFourGrid() {
     // check if we have 3 spots to the right
     // 7 columns
     let columnNumber = columnIndex + 1;
-    let numColumnsRight = totalNumOfColumns - columnNumber;
+    let numColumnsRight = 7 - columnNumber;
     // check if we have atleast 3 spots to the right, and then check
     if (numColumnsRight >= 3) {
       let winConditionRight = true;
@@ -172,7 +169,7 @@ function ConnectFourGrid() {
   function checkVerticalWinCondition(rowIndex, columnIndex) {
     // check if there are 3 more spots downwards from current highlighted index
     let verticalWinExists = false;
-    let rowsRemainingDownwards = totalNumOfRows - (rowIndex + 1);
+    let rowsRemainingDownwards = 6 - (rowIndex + 1);
     if (rowsRemainingDownwards >= 3) {
       let downwardWinExists = true;
       let lastIndex = rowIndex + 4;
@@ -310,9 +307,9 @@ function ConnectFourGrid() {
   /**
    * Restart game callback
    */
-  function restartGame() {
+  function handleRestartGame() {
     setWinner(null);
-    setGridSpotStates(initFilledGridSpots());
+    setGridSpotStates(initGridSpotStates());
     setHighlightIndex(null);
     setCurrentPlayer("player1");
   }
@@ -347,8 +344,8 @@ function ConnectFourGrid() {
           key={key}
           row={i}
           column={j}
-          onHoverCallback={onHoverCallback}
-          onClickCallback={onClickCallback}
+          onHoverCallback={handleGridSpotHover}
+          onClickCallback={handleGridSpotClick}
           backgroundColor={gridSpotBgColor}
         ></GridSpot>
       );
@@ -375,15 +372,15 @@ function ConnectFourGrid() {
         </div>
       </div>
       <div className="mt-3">
-        <ControlPanel
+        <Controls
           playerOneName={playerOneName}
           playerOneColor={playerOneColor}
           playerTwoName={playerTwoName}
           playerTwoColor={playerTwoColor}
-          handleRestartGame={restartGame}
+          handleRestartGame={handleRestartGame}
           handlePlayerOneNameChange={handlePlayerOneNameChange}
           handlePlayerTwoNameChange={handlePlayerTwoNameChange}
-        ></ControlPanel>
+        ></Controls>
       </div>
     </div>
   );

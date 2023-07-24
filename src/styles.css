@@ -1,7 +1,6 @@
 * {
     font-family: 'Amatic SC', cursive;
     letter-spacing: 2px;
-    /* font-family: 'Lato', sans-serif; */
 }
 
 .App {
@@ -17,8 +16,7 @@
 }
 
 .grid-position {
-    width: 450px;
- 
+    /* width: 450px; */
 }
 
 .grid-container {
@@ -34,6 +32,7 @@
     border-color: black;
     border-width: 2px;
     box-shadow: 0px 6px 0px 0px;
+    width: min-content;
 }
 
 .grid-spot {
@@ -43,6 +42,18 @@
     border-style: inset;
     border-color: black;
     box-shadow: inset 0px 6px 0px 0px rgba(0,0,0);
+}
+
+@media (max-width: 575px) {
+    .grid-spot {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .grid-container {
+        gap: 4px;
+        grid-template-columns: 2.5rem 2.5rem 2.5rem 2.5rem 2.5rem 2.5rem 2.5rem;
+    }
 }
 
 .primary-btn {
@@ -60,10 +71,10 @@
 }
 
 .player-name-input {
-    background-color: #4f21d8 !important;
+    /* background-color: #4f21d8 !important; */
     border-radius: 16px !important;
     text-align: center;
-    color: whitesmoke;
+    color: black;
     width: 100%;
     font-size: 16px;
 }
