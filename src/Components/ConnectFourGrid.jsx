@@ -43,50 +43,66 @@ function ConnectFourGrid() {
   function handleGridSpotHover(rowNum, colNum) {
     // find the last spot in the column to highlight
     if (winner === null) {
-      let highlightRow = -1;
-      let highlightColumn = colNum;
-
-      if (gridSpotStates) {
-        gridSpotStates.forEach((row, index) => {
-          let spot = row[colNum];
-          if (spot !== "none") {
-            return; // when the entire column is full
-          } else {
-            highlightRow = index;
-          }
-        });
-      }
-      if (highlightRow !== -1) {
-        setHighlightIndex([highlightRow, highlightColumn]);
+      let validRowCol = getValidGridSpot(rowNum, colNum);
+      if (validRowCol) {
+        if (validRowCol[0] !== -1) {
+          setHighlightIndex([validRowCol[0], validRowCol[1]]);
+        }
       }
     }
+  }
+
+  function getValidGridSpot(rowNum, colNum) {
+    let validRow = -1;
+    let validCol = colNum;
+
+    if (gridSpotStates) {
+      gridSpotStates.forEach((row, index) => {
+        let spot = row[colNum];
+        if (spot !== "none") {
+          return; // when the entire column is full
+        } else {
+          validRow = index;
+        }
+      });
+    }
+
+    if (validRow === -1) return null;
+    return [validRow, validCol];
   }
 
   /**
    * OnClick callback when user clicks on an available slot
    */
-  function handleGridSpotClick() {
-    if (highlightIndex != null) {
+  function handleGridSpotClick(row, column) {
+    if (winner === null) {
       if (playerOneName === "" || playerTwoName === "") {
         alert("Please ensure player names are not empty");
       } else {
-        var row = highlightIndex[0];
-        var column = highlightIndex[1];
-        if (gridSpotStates[row][column] === "none") {
-          gridSpotStates[row][column] =
-            currentPlayer === "player1" ? "player1" : "player2";
-          setGridSpotStates(gridSpotStates);
-          setHighlightIndex(null);
-          if (checkWinCondition(row, column)) {
-            setWinner(
-              currentPlayer === "player1" ? playerOneName : playerTwoName
-            );
-          } else {
-            if (currentPlayer === "player2") {
-              setCurrentPlayer("player1");
-            }
-            if (currentPlayer === "player1") {
-              setCurrentPlayer("player2");
+        let validGridSpot = getValidGridSpot(row, column);
+        console.log(validGridSpot);
+        if (validGridSpot) {
+          if (highlightIndex) validGridSpot = highlightIndex;
+          if (validGridSpot[1] === column) {
+            let validRow = validGridSpot[0];
+            let validCol = validGridSpot[1];
+            if (gridSpotStates[validRow][validCol] === "none") {
+              gridSpotStates[validRow][validCol] =
+                currentPlayer === "player1" ? "player1" : "player2";
+              setGridSpotStates(gridSpotStates);
+              setHighlightIndex(null);
+              if (checkWinCondition(validRow, validCol)) {
+                setWinner(
+                  currentPlayer === "player1" ? playerOneName : playerTwoName
+                );
+              } else {
+                if (currentPlayer === "player2") {
+                  setCurrentPlayer("player1");
+                }
+                if (currentPlayer === "player1") {
+                  setCurrentPlayer("player2");
+                }
+              }
             }
           }
         }
@@ -98,7 +114,7 @@ function ConnectFourGrid() {
    *
    * @param {the row index the user clicked on} rowIndex
    * @param {the column index the user clicked on} columnIndex
-   * @returns the number of points the current player gets
+   * @returns true if win condition exists, false otherwise
    */
   function checkWinCondition(rowIndex, columnIndex) {
     if (checkHorizontalWinCondition(rowIndex, columnIndex)) {

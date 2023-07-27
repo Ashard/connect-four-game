@@ -16,7 +16,7 @@ function GridSpot({
     <div
       className="grid-spot"
       onMouseEnter={() => handleOnHoverCB()}
-      onClick={onClickCallback}
+      onClick={() => onClickCallback(row, column)}
       style={{
         backgroundColor: backgroundColor,
       }}
